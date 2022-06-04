@@ -59,6 +59,11 @@ do
         -- // Also, in addition to firing the callback, fire self.Signals:Fire("Clicked")
     end
 
+    -- // Updates the instance, reflecting any changes seen within the Data. This is fired whenever the Clicked event is fired.
+    function this.UpdateInstance(self)
+        -- // Put your code here, no need for a return
+    end
+
     -- // Loads default settings with given data
     function this.InitialiseSettings(self, Data)
         -- // Make sure we have data
@@ -80,6 +85,12 @@ do
             -- // Add it
             self.Signals:Add(v)
         end
+
+        -- // Listen to clicked
+        self.Signals:Connect("Clicked", function()
+            -- // Update the instance
+            self:UpdateInstance()
+        end)
     end
 end
 
@@ -136,6 +147,11 @@ do
         -- // Or use the self:Set state which handles this for you
     end
 
+    -- // Updates the instance, reflecting any changes seen within the Data. This is fired whenever any changes are made with the Set method.
+    function this.UpdateInstance(self)
+        -- // Put your code here, no need for a return
+    end
+
     -- // Gets the current state
     function this.Get(self)
         return self.State
@@ -154,6 +170,8 @@ do
         self.Signals:Fire("Changed", NewState, OldState)
 
         self.Callback(NewState, OldState)
+
+        self:UpdateInstance()
     end
 
     -- // Loads default settings with given data
@@ -241,6 +259,11 @@ do
         -- // Or use the self:Set state which handles this for you
     end
 
+    -- // Updates the instance, reflecting any changes seen within the Data. This is fired whenever any changes are made with the Set method.
+    function this.UpdateInstance(self)
+        -- // Put your code here, no need for a return
+    end
+
     -- // Hides the tab
     function this.Hide(self)
         -- // Put your code here that hides the tab
@@ -275,6 +298,8 @@ do
         end
 
         self.Callback(NewState, OldState)
+
+        self:UpdateInstance()
     end
 
     -- // Loads default settings with given data
@@ -365,6 +390,11 @@ do
         -- // Or use the self:Set state which handles this for you
     end
 
+    -- // Updates the instance, reflecting any changes seen within the Data. This is fired whenever any changes are made with the Set method.
+    function this.UpdateInstance(self)
+        -- // Put your code here, no need for a return
+    end
+
     -- // Hides the library
     function this.Hide(self)
         -- // Put your code here that hides the library
@@ -399,6 +429,8 @@ do
         end
 
         self.Callback(NewState, OldState)
+
+        self:UpdateInstance()
     end
 
     -- // Loads default settings with given data
