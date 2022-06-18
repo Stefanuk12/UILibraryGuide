@@ -4,6 +4,9 @@
     Information:
         - This guide uses International (British) English spelling so please abide by that
 
+    Guidance:
+        - If your library does not support everything or has more, you can edit this. Make sure to stick by the same stuff ish
+
     To Do:
         - Type Checking
         - Add additional components
@@ -748,7 +751,138 @@ local function GetElementComponents()
     }
 end
 
--- // Tab class - all state related things are in reference to the Tab's visibility
+
+-- // Section class - all state related things are in reference to the Section's visibility.
+local Section = {}
+Section.__index = Section
+Section.__type = "Section"
+do
+    -- // Vars
+    local this = Section -- // makes it easier to copy and paste methods across
+
+    this.AllSignals = {
+        "Clicked",
+        "Changed"
+    }
+    this.DefaultSettings = {
+        Parent = "nil",
+
+        Title = "New Section",
+        State = false,
+
+        Callback = function(NewState, OldState)
+
+        end
+    }
+
+    -- // Constructor - initialises the object and instance
+    function this.new(Data)
+        -- // Create the object
+        local self = setmetatable({}, this)
+
+        -- // Initialising the settings
+        self:InitialiseSettings(Data)
+
+        -- // Create the instance
+        self.Instance = self:CreateInstance()
+
+        -- // Create the signal manager
+        self.Signals = SignalManager.new()
+        self:InitialiseSignals()
+
+        -- // Additional variables
+        self.State = false
+
+        -- // Return object
+        return self
+    end
+
+    -- // Creates the instance
+    function this.CreateInstance(self)
+        -- // Put your code here, return an Instance like a Frame or whatever
+        -- // Also, in addition to firing the callback, fire self.Signals:Fire("Clicked")
+        -- // As well as self.Signals:Fire("Changed", NewState, OldState)
+        -- // Or use the self:Set state which handles this for you
+    end
+
+    -- // Updates the instance, reflecting any changes seen within the Data. This is fired whenever any changes are made with the Set method.
+    function this.UpdateInstance(self)
+        -- // Put your code here, no need for a return
+    end
+
+    -- // Hides the tab
+    function this.Hide(self)
+        -- // Put your code here that hides the tab
+    end
+
+    -- // Shows the tab
+    function this.Show(self)
+        -- // Put your code here that shows the tab
+    end
+
+    -- // Gets the current state
+    function this.Get(self)
+        return self.State
+    end
+
+    -- // Sets the current state
+    function this.Set(self, NewState)
+        local OldState = self.State
+
+        if (NewState == nil) then
+            NewState = not self.State
+        end
+        self.State = NewState
+
+        self.Signals:Fire("Clicked")
+        self.Signals:Fire("Changed", NewState, OldState)
+
+        if (NewState) then
+            this:Show()
+        else
+            this:Hide()
+        end
+
+        self.Callback(NewState, OldState)
+
+        self:UpdateInstance()
+    end
+
+    -- // Loads default settings with given data
+    function this.InitialiseSettings(self, Data)
+        -- // Make sure we have data
+        Data = Data or {}
+
+        -- // Loop through defaults and set
+        for i, v in pairs(this.DefaultSettings) do
+            self[i] = Data[i] or v
+        end
+
+        -- // Return
+        return self
+    end
+
+    -- // Creates all of the signals, ready to be fire and connected to
+    function this.InitialiseSignals(self)
+        -- // Loop through each signal
+        for _, v in ipairs(this.AllSignals) do
+            -- // Add it
+            self.Signals:Add(v)
+        end
+    end
+
+    -- // Adding all of the element components, e.g. Buttons, Toggles.
+    for _, ElementComponent in ipairs(GetElementComponents()) do
+        this[ElementComponent.__type] = function(self, Data)
+            Data = Data or {}
+            Data.Parent = self
+
+            return ElementComponent.new(Data)
+        end
+    end
+end
+
+-- // Tab class - all state related things are in reference to the Tab's visibility. You can think tabs as pages
 local Tab = {}
 Tab.__index = Tab
 Tab.__type = "Tab"
@@ -867,14 +1001,12 @@ do
         end
     end
 
-    -- // Adding all of the element components, e.g. Buttons, Toggles.
-    for _, ElementComponent in ipairs(GetElementComponents()) do
-        this[ElementComponent.__type] = function(self, Data)
-            Data = Data or {}
-            Data.Parent = self
+    -- //
+    function this.Section(self, Data)
+        Data = Data or {}
+        Data.Parent = self
 
-            return ElementComponent.new(Data)
-        end
+        return Section.new(Data)
     end
 end
 
